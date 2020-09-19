@@ -1,4 +1,4 @@
-# The Linux Aproach
+# The Easy Approach
 
 Using pre-existing tools I was able to achieve essentially the same result in like 2 seconds using zero ML.
 
