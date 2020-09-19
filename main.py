@@ -66,5 +66,36 @@ def async_detect_document(gcs_source_uri, gcs_destination_uri):
     # The response contains more information:
     # annotation/pages/blocks/paragraphs/words/symbols
     # including confidence scores and bounding boxes
-    print(u'Full text:\n{}'.format(
-        annotation.text))
+    return annotation.text
+
+def synthesize_text(text):
+    from google.cloud import texttospeech
+
+    client = texttospeech.TextToSpeechClient()
+
+    input_text = texttospeech.SynthesisInput(text=text)
+
+    voice = texttospeech.VoiceSelectionParams(
+        language_code="en-US",
+        name="en-US-Wavenet-D",
+    )
+
+    audio_config = texttospeech.AudioConfig(
+        audio_encoding=texttospeech.AudioEncoding.MP3
+    )
+
+    response = client.synthesize_speech(
+        request={"input": input_text, "voice": voice, "audio_config": audio_config}
+    )
+
+    with open("output.mp3", "wb") as out:
+        out.write(response.audio_content)
+        print('Audio content written to file "output.mp3"')
+
+
+def main():
+    text = async_detect_document("gs://waffle_pdf/cl.pdf", "gs://waffle_pdf/output/cl")
+    synthesize_text(text)
+
+if __name__ == "__main__":
+    main()
